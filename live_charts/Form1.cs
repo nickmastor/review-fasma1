@@ -1,4 +1,4 @@
-﻿using LiveCharts;
+using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
 using System;
@@ -10,26 +10,50 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using LiveCharts.WinForms;
 
-namespace live_charts
+namespace thebuttoncrises
 {
     public partial class Form1 : Form
     {
+        int Q = 0;
         public Form1()
         {
+            
             InitializeComponent();
-            int Q = 0;
+            comboBox1.Items.Add("maze");
+            comboBox1.Items.Add("time");
+        }
+
+        private void CartesianChart1_ChildChanged(object sender, System.Windows.Forms.Integration.ChildChangedEventArgs e)
+        {
+
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog test = new OpenFileDialog();
+           
+            test.Title = "open file";
+            test.Filter = "text|*.txt";
+            if (test.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+
+
+                createChart(test.FileName, Q);
+            }
+        }
+        private void createChart(string filename, int Q)
+        {
+
             int size = 0;
-         
+            int start = 0;
             List<double> firstcolumn = new List<double>();
             List<double> secondcolumn = new List<double>();
             List<double> thirdcolumn = new List<double>();
-            string[] lines = System.IO.File.ReadAllLines(@"C:\Users\Νίκος\Desktop\ultramark TOF_1.txt");
+
+            string[] lines = System.IO.File.ReadAllLines($"{filename}");
             // Display the file contents by using a foreach loop.
             System.Console.WriteLine("Contents of WriteLines2.txt1 = ");
-            int start = 0;
             foreach (string line in lines)
             {
                 // Use a tab to indent each line of the file.
@@ -41,25 +65,26 @@ namespace live_charts
                 {      //to found the start value and the max value
 
                     a = "Spectrum duration [us]:";
-                    g = get_number(line, a);
+
+                    MessageBox.Show(a);
                     //Console.WriteLine(g);
 
-                };
-                if (line.Contains("Spectrum delay [us]:"))
+                }
+                else if (line.Contains("Spectrum delay [us]:"))
                 {
                     a = "Spectrum delay [us]:";
 
                     g = get_number(line, a);
-                   // Console.WriteLine(g);
+                    // Console.WriteLine(g);
                 };
                 if (start == 1)
                 {
 
                     b = get_the_elements(line, Q);                               ///start finding the numbers i have to store
                     firstcolumn.Add(b[Q]);
-                    secondcolumn .Add(b[2]);
+                    secondcolumn.Add(b[2]);
                     size++;
-                // Console.WriteLine($"{b[Q]} {b[2]}");
+                    // Console.WriteLine($"{b[Q]} {b[2]}");
                 };
                 if (line.Contains("time[ns]"))
                 {
@@ -69,34 +94,29 @@ namespace live_charts
 
                 };
 
-
             }
-            
-
-
-            cartesianChart2.Series = new SeriesCollection
+                cartesianChart1.Series = new SeriesCollection
             {
-
-                new LineSeries
+                    new LineSeries 
+               
                 {
 
-                    Values = new ChartValues<ObservablePoint> 
+                    Values = new ChartValues<ObservablePoint>
                    {
                     
-              //new ObservablePoint(firstcolumn[i], secondcolumn[i]),
+              
                       
 
                        },
                 }
-                
-            };for (int i = 0; i < (size - 1)/100; i++)
-            {
-                _ = cartesianChart2.Series[0].Values.Add(new ObservablePoint(firstcolumn[i], secondcolumn[i]));
-            }
 
+            }; for (int i = 0; i < (size - 1) / 100; i++)
+                {
+                    _ = cartesianChart1.Series[0].Values.Add(new ObservablePoint(firstcolumn[i], secondcolumn[i]));
+                }
+            
         }
-
-
+       
         public static int get_number(string line1, string notablePhrase)
         {
 
@@ -139,10 +159,26 @@ namespace live_charts
 
 
         }
+        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
-        private void Button1_Click(object sender, EventArgs e)
+            if (comboBox1.SelectedItem == "maze")
+            {
+                Q = 1;
+            }
+            else if (comboBox1.SelectedItem == "time")
+            {
+                Q = 0;
+            };
+
+        }
+
+        private void Chart1_Click(object sender, EventArgs e)
         {
 
         }
     }
 }
+
+
+
